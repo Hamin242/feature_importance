@@ -51,7 +51,15 @@ if uploaded_file is not None:
                 file_name="svm_feature_importance.csv",
                 mime="text/csv"
             )
-
+            
+            c = svm_model.intercept_[0]  # 직선의 절편
+            st.subheader("직선 방정식:")
+            tmp = f"y = "
+            for feature, importance in importance_sorted:
+                tmp += f" + {importance:.4f} * {feature}"
+            tmp += f" + {c:.4f}"
+            st.write(tmp)
+            
             # 테스트 데이터에 대한 예측 및 정확도 출력
             predictions = svm_model.predict(X_test)
             accuracy = accuracy_score(y_test, predictions)
