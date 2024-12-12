@@ -14,7 +14,8 @@ uploaded_file = st.sidebar.file_uploader('CSV 파일 업로드', type=['csv'])
 
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file, encoding='EUC-KR')
-    df['양불'] = df['양불'].map({'불량': -1, '양품': 1})
+    if df['양불'].dtype != int:
+        df['양불'] = df['양불'].map({'불량': -1, '양품': 1})
     st.write(df)  # 데이터프레임을 화면에 출력합니다
 
     # 반응 변수와 입력 변수를 선택할 수 있는 위젯을 추가합니다.
