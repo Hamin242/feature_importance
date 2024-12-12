@@ -6,7 +6,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
-st.title('Feature importance')
+st.title('Feature Importance')
 
 st.sidebar.title('입력 값')
 
@@ -14,12 +14,19 @@ uploaded_file = st.sidebar.file_uploader('CSV 파일 업로드', type=['csv'])
 
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file, encoding='EUC-KR')
-    df['양불'] = df['양불'].map({'불량': -1, '양품': 1})
+
+    if '양불' in df.columns:
+        df['양불'] = df['양불'].map({'불량': -1, '양품': 1})
     st.write(df)  # 데이터프레임을 화면에 출력합니다
 
     # 반응 변수와 입력 변수를 선택할 수 있는 위젯을 추가합니다.
+    select_all = st.sidebar.checkbox('전체 선택', value=False)
     target_column = st.sidebar.selectbox('반응 변수 선택', options=df.columns)
-    input_columns = st.sidebar.multiselect('입력 변수 선택', options=df.columns, default=[])
+    
+    if select_all:
+        input_columns = df.columns.tolist()  # 전체 선택 시 모든 컬럼을 입력 변수로 설정
+    else:
+        input_columns = st.sidebar.multiselect('입력 변수 선택', options=df.columns, default=[])
 
     # 특징 변수와 타겟 변수를 선택된 컬럼으로 설정합니다.
     X = df[input_columns]  # 선택된 입력 변수로 설정합니다.
@@ -73,8 +80,6 @@ if uploaded_file is not None:
             plt.title('SVM Feature importance')
             st.pyplot(fig)
 
-
-
     with tab2:
         # 모델 훈련 영역
         st.header('모델 훈련')
@@ -88,8 +93,6 @@ if uploaded_file is not None:
             importance_sorted = sorted(zip(X.columns, rf_model.feature_importances_), key=lambda x: x[1], reverse=True)
             for feature, importance in importance_sorted:
                 st.write(f'{feature}: {importance}')
-
-
 
             # 테스트 데이터에 대한 예측 및 정확도 출력
             predictions = rf_model.predict(X_test)
