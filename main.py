@@ -13,10 +13,19 @@ st.sidebar.title('입력 값')
 uploaded_file = st.sidebar.file_uploader('CSV 파일 업로드', type=['csv'])
 
 if uploaded_file is not None:
+    # Read the CSV file
     df = pd.read_csv(uploaded_file, encoding='EUC-KR')
-    if df['양불'].dtype != int:
-        df['양불'] = df['양불'].map({'불량': -1, '양품': 1})
-    st.write(df)  # 데이터프레임을 화면에 출력합니다
+    
+    # Print column names to debug the column name issue
+    st.write("Column names in the DataFrame:", df.columns)
+    
+    # Check if the column '양불' exists in the DataFrame
+    if '양불' in df.columns:
+        if df['양불'].dtype != int:
+            df['양불'] = df['양불'].map({'불량': -1, '양품': 1})
+        st.write(df)  # Display the DataFrame
+    else:
+        st.error("The column '양불' does not exist in the DataFrame.")
 
     # 반응 변수와 입력 변수를 선택할 수 있는 위젯을 추가합니다.
     target_column = st.sidebar.selectbox('반응 변수 선택', options=df.columns)
